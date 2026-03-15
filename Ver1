@@ -115,6 +115,7 @@ local Flight = {
     Enabled = false,
     Speed = 100,
     BodyVelocity = nil,
+    BodyGyro = nil,
     Connection = nil
 }
 
@@ -158,6 +159,122 @@ local TeleportAll = {
 
 local MenuVisible = true
 local InsertBind = Enum.KeyCode.Insert
+
+local function getDirection()
+    local cam = workspace.CurrentCamera.CFrame
+    local move = Vector3.new(0, 0, 0)
+    
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        move = move + cam.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        move = move - cam.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        move = move - cam.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        move = move + cam.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        move = move + Vector3.new(0, 1, 0)
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+        move = move - Vector3.new(0, 1, 0)
+    end
+    
+    if move.Magnitude > 0 then
+        move = move.Unit
+    end
+    
+    return move
+end
+
+local function toggleFlight()
+    Flight.Enabled = not Flight.Enabled
+    
+    if Flight.Enabled then        
+        local character = LocalPlayer.Character
+        if not character then 
+            Flight.Enabled = false 
+            return 
+        end
+        
+        local root = character:FindFirstChild("HumanoidRootPart")
+        if not root then 
+            Flight.Enabled = false 
+            return 
+        end
+        
+        local hum = character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.PlatformStand = true
+        end
+        
+        if Flight.BodyVelocity then
+            Flight.BodyVelocity:Destroy()
+        end
+        if Flight.BodyGyro then
+            Flight.BodyGyro:Destroy()
+        end
+        
+        Flight.BodyVelocity = Instance.new("BodyVelocity")
+        Flight.BodyVelocity.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        Flight.BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        Flight.BodyVelocity.Parent = root
+        
+        Flight.BodyGyro = Instance.new("BodyGyro")
+        Flight.BodyGyro.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
+        Flight.BodyGyro.P = 10000
+        Flight.BodyGyro.D = 500
+        Flight.BodyGyro.CFrame = root.CFrame
+        Flight.BodyGyro.Parent = root
+        
+        if Flight.Connection then
+            Flight.Connection:Disconnect()
+        end
+        
+        Flight.Connection = RunService.Heartbeat:Connect(function()
+            local char = LocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            
+            if hrp and hum and Flight.Enabled then
+                local dir = getDirection()
+                local cam = workspace.CurrentCamera
+                
+                Flight.BodyVelocity.Velocity = dir * Flight.Speed
+                Flight.BodyGyro.CFrame = cam.CFrame
+                
+                if hum:GetState() ~= Enum.HumanoidStateType.Physics then
+                    hum:ChangeState(Enum.HumanoidStateType.Physics)
+                end
+            end
+        end)
+    else
+        if Flight.Connection then
+            Flight.Connection:Disconnect()
+            Flight.Connection = nil
+        end
+        if Flight.BodyVelocity then
+            Flight.BodyVelocity:Destroy()
+            Flight.BodyVelocity = nil
+        end
+        if Flight.BodyGyro then
+            Flight.BodyGyro:Destroy()
+            Flight.BodyGyro = nil
+        end
+        
+        local char = LocalPlayer.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                hum.PlatformStand = false
+                hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+            end
+        end
+    end
+end
 
 local function createToggle(parent, name, default, callback)
     local frame = Instance.new("Frame")
@@ -275,80 +392,6 @@ local function createInput(parent, name, default, callback)
     end)
     
     return frame
-end
-
-local function updateFlight()
-    if Flight.Enabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local root = LocalPlayer.Character.HumanoidRootPart
-        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        
-        local cam = workspace.CurrentCamera
-        local move = Vector3.new(0, 0, 0)
-        
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            move = move + cam.CFrame.LookVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            move = move - cam.CFrame.LookVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            move = move - cam.CFrame.RightVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            move = move + cam.CFrame.RightVector
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-            move = move + Vector3.new(0, 1, 0)
-        end
-        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-            move = move + Vector3.new(0, -1, 0)
-        end
-        
-        if move.Magnitude > 0 then
-            move = move.Unit * Flight.Speed
-        end
-        
-        if not Flight.BodyVelocity then
-            Flight.BodyVelocity = Instance.new("BodyVelocity")
-            Flight.BodyVelocity.MaxForce = Vector3.new(1e6, 1e6, 1e6)
-            Flight.BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-            Flight.BodyVelocity.Parent = root
-        end
-        
-        Flight.BodyVelocity.Velocity = move
-        
-        if hum then
-            hum:ChangeState(Enum.HumanoidStateType.Physics)
-        end
-    elseif Flight.BodyVelocity then
-        Flight.BodyVelocity:Destroy()
-        Flight.BodyVelocity = nil
-    end
-end
-
-local function toggleFlight()
-    Flight.Enabled = not Flight.Enabled
-    
-    if Flight.Enabled then
-        if not Flight.Connection then
-            Flight.Connection = RunService.Heartbeat:Connect(updateFlight)
-        end
-    else
-        if Flight.BodyVelocity then
-            Flight.BodyVelocity:Destroy()
-            Flight.BodyVelocity = nil
-        end
-        if Flight.Connection then
-            Flight.Connection:Disconnect()
-            Flight.Connection = nil
-        end
-        
-        local char = LocalPlayer.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-        end
-    end
 end
 
 local function updateHitbox(state)
@@ -765,10 +808,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 RunService.Heartbeat:Connect(function()
-    if Flight.Enabled then
-        updateFlight()
-    end
-    
     if Movement.Mode == "BV" and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and Movement.BodyVelocity and Movement.BodyVelocity.Parent then
         local moveDir = LocalPlayer.Character.Humanoid.MoveDirection
         
@@ -818,6 +857,8 @@ LocalPlayer.CharacterAdded:Connect(function(character)
     
     if Flight.Enabled then
         Flight.Enabled = false
+        Flight.Enabled = true
+        toggleFlight()
     end
     
     setupMovementPhysics(character)
@@ -829,6 +870,14 @@ LocalPlayer.CharacterRemoving:Connect(function()
         if Flight.BodyVelocity then
             Flight.BodyVelocity:Destroy()
             Flight.BodyVelocity = nil
+        end
+        if Flight.BodyGyro then
+            Flight.BodyGyro:Destroy()
+            Flight.BodyGyro = nil
+        end
+        if Flight.Connection then
+            Flight.Connection:Disconnect()
+            Flight.Connection = nil
         end
     end
     
@@ -866,24 +915,3 @@ Players.PlayerAdded:Connect(function(player)
                 hrp.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
                 hrp.Transparency = 1
                 hrp.CanCollide = false
-            end
-        end
-    end
-end)
-
-for _, player in ipairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer and player.Character and Hitbox.Enabled then
-        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-        if hrp then
-            hrp.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
-            hrp.Transparency = 1
-            hrp.CanCollide = false
-        end
-    end
-end
-
-updateMovementStats()
-updateNoclip(Noclip.Enabled)
-updateInfiniteJump(InfiniteJump.Enabled)
-
-ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
