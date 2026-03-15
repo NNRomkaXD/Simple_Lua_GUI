@@ -11,95 +11,110 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 300, 0, 550)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -275)
+MainFrame.Size = UDim2.new(0, 260, 0, 450)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -225)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.BorderSizePixel = 1
-MainFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Thickness = 0.5
+MainStroke.Color = Color3.fromRGB(255, 255, 255)
+MainStroke.Parent = MainFrame
+
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 4)
+MainCorner.CornerRadius = UDim.new(0, 3)
 MainCorner.Parent = MainFrame
 
 local TitleBar = Instance.new("Frame")
 TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.Size = UDim2.new(1, 0, 0, 25)
 TitleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-TitleBar.BorderSizePixel = 1
-TitleBar.BorderColor3 = Color3.fromRGB(255, 255, 255)
+TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
 
+local TitleStroke = Instance.new("UIStroke")
+TitleStroke.Thickness = 0.5
+TitleStroke.Color = Color3.fromRGB(255, 255, 255)
+TitleStroke.Parent = TitleBar
+
 local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 4)
+TitleCorner.CornerRadius = UDim.new(0, 3)
 TitleCorner.Parent = TitleBar
 
 local Title = Instance.new("TextLabel")
 Title.Name = "Title"
-Title.Size = UDim2.new(1, -30, 1, 0)
+Title.Size = UDim2.new(1, -25, 1, 0)
 Title.Position = UDim2.new(0, 5, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "CHEAT MENU"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Font = Enum.Font.Code
-Title.TextSize = 16
+Title.TextSize = 14
 Title.Parent = TitleBar
 
 local CloseButton = Instance.new("TextButton")
 CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 25, 0, 25)
-CloseButton.Position = UDim2.new(1, -27, 0, 2.5)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Position = UDim2.new(1, -22, 0, 2.5)
 CloseButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-CloseButton.BorderSizePixel = 1
-CloseButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.BorderSizePixel = 0
 CloseButton.Text = "X"
 CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.Font = Enum.Font.Code
-CloseButton.TextSize = 16
+CloseButton.TextSize = 14
 CloseButton.Parent = TitleBar
 
+local CloseStroke = Instance.new("UIStroke")
+CloseStroke.Thickness = 0.5
+CloseStroke.Color = Color3.fromRGB(255, 255, 255)
+CloseStroke.Parent = CloseButton
+
 local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 4)
+CloseCorner.CornerRadius = UDim.new(0, 3)
 CloseCorner.Parent = CloseButton
 
 local ScrollingFrame = Instance.new("ScrollingFrame")
 ScrollingFrame.Name = "ScrollingFrame"
-ScrollingFrame.Size = UDim2.new(1, 0, 1, -30)
-ScrollingFrame.Position = UDim2.new(0, 0, 0, 30)
+ScrollingFrame.Size = UDim2.new(1, 0, 1, -25)
+ScrollingFrame.Position = UDim2.new(0, 0, 0, 25)
 ScrollingFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ScrollingFrame.BorderSizePixel = 1
-ScrollingFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
-ScrollingFrame.ScrollBarThickness = 5
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.ScrollBarThickness = 4
 ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(30, 30, 30)
 ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 ScrollingFrame.Parent = MainFrame
 
+local ScrollStroke = Instance.new("UIStroke")
+ScrollStroke.Thickness = 0.5
+ScrollStroke.Color = Color3.fromRGB(255, 255, 255)
+ScrollStroke.Parent = ScrollingFrame
+
 local ScrollCorner = Instance.new("UICorner")
-ScrollCorner.CornerRadius = UDim.new(0, 4)
+ScrollCorner.CornerRadius = UDim.new(0, 3)
 ScrollCorner.Parent = ScrollingFrame
 
 local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Padding = UDim.new(0, 4)
+UIListLayout.Padding = UDim.new(0, 3)
 UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Parent = ScrollingFrame
 
 local UIPadding = Instance.new("UIPadding")
-UIPadding.PaddingTop = UDim.new(0, 4)
-UIPadding.PaddingBottom = UDim.new(0, 4)
-UIPadding.PaddingLeft = UDim.new(0, 4)
-UIPadding.PaddingRight = UDim.new(0, 4)
+UIPadding.PaddingTop = UDim.new(0, 3)
+UIPadding.PaddingBottom = UDim.new(0, 3)
+UIPadding.PaddingLeft = UDim.new(0, 3)
+UIPadding.PaddingRight = UDim.new(0, 3)
 UIPadding.Parent = ScrollingFrame
 
 local Flight = {
     Enabled = false,
     Speed = 100,
     BodyVelocity = nil,
-    BodyGyro = nil,
     Connection = nil
 }
 
@@ -146,14 +161,18 @@ local InsertBind = Enum.KeyCode.Insert
 
 local function createToggle(parent, name, default, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -8, 0, 30)
+    frame.Size = UDim2.new(1, -6, 0, 25)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BorderSizePixel = 1
-    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    frame.BorderSizePixel = 0
     frame.Parent = parent
     
+    local frameStroke = Instance.new("UIStroke")
+    frameStroke.Thickness = 0.5
+    frameStroke.Color = Color3.fromRGB(255, 255, 255)
+    frameStroke.Parent = frame
+    
     local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 4)
+    frameCorner.CornerRadius = UDim.new(0, 3)
     frameCorner.Parent = frame
     
     local label = Instance.new("TextLabel")
@@ -164,23 +183,27 @@ local function createToggle(parent, name, default, callback)
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Font = Enum.Font.Code
-    label.TextSize = 14
+    label.TextSize = 12
     label.Parent = frame
     
     local button = Instance.new("TextButton")
-    button.Size = UDim2.new(0.3, -5, 0, 25)
-    button.Position = UDim2.new(0.7, 0, 0.5, -12.5)
+    button.Size = UDim2.new(0.3, -5, 0, 20)
+    button.Position = UDim2.new(0.7, 0, 0.5, -10)
     button.BackgroundColor3 = default and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(40, 40, 40)
-    button.BorderSizePixel = 1
-    button.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    button.BorderSizePixel = 0
     button.Text = default and "ON" or "OFF"
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Font = Enum.Font.Code
-    button.TextSize = 14
+    button.TextSize = 12
     button.Parent = frame
     
+    local buttonStroke = Instance.new("UIStroke")
+    buttonStroke.Thickness = 0.5
+    buttonStroke.Color = Color3.fromRGB(255, 255, 255)
+    buttonStroke.Parent = button
+    
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 4)
+    buttonCorner.CornerRadius = UDim.new(0, 3)
     buttonCorner.Parent = button
     
     local state = default
@@ -197,41 +220,49 @@ end
 
 local function createInput(parent, name, default, callback)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -8, 0, 40)
+    frame.Size = UDim2.new(1, -6, 0, 35)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BorderSizePixel = 1
-    frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    frame.BorderSizePixel = 0
     frame.Parent = parent
     
+    local frameStroke = Instance.new("UIStroke")
+    frameStroke.Thickness = 0.5
+    frameStroke.Color = Color3.fromRGB(255, 255, 255)
+    frameStroke.Parent = frame
+    
     local frameCorner = Instance.new("UICorner")
-    frameCorner.CornerRadius = UDim.new(0, 4)
+    frameCorner.CornerRadius = UDim.new(0, 3)
     frameCorner.Parent = frame
     
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.5, -5, 0, 20)
+    label.Size = UDim2.new(0.5, -5, 0, 15)
     label.Position = UDim2.new(0, 5, 0, 2)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Font = Enum.Font.Code
-    label.TextSize = 14
+    label.TextSize = 12
     label.Parent = frame
     
     local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0.5, -5, 0, 25)
-    box.Position = UDim2.new(0.5, 0, 0.5, -12.5)
+    box.Size = UDim2.new(0.5, -5, 0, 22)
+    box.Position = UDim2.new(0.5, 0, 0.5, -11)
     box.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    box.BorderSizePixel = 1
-    box.BorderColor3 = Color3.fromRGB(255, 255, 255)
+    box.BorderSizePixel = 0
     box.Text = tostring(default)
     box.TextColor3 = Color3.fromRGB(255, 255, 255)
     box.Font = Enum.Font.Code
-    box.TextSize = 14
+    box.TextSize = 12
     box.Parent = frame
     
+    local boxStroke = Instance.new("UIStroke")
+    boxStroke.Thickness = 0.5
+    boxStroke.Color = Color3.fromRGB(255, 255, 255)
+    boxStroke.Parent = box
+    
     local boxCorner = Instance.new("UICorner")
-    boxCorner.CornerRadius = UDim.new(0, 4)
+    boxCorner.CornerRadius = UDim.new(0, 3)
     boxCorner.Parent = box
     
     box.FocusLost:Connect(function()
@@ -282,17 +313,9 @@ local function updateFlight()
             Flight.BodyVelocity.MaxForce = Vector3.new(1e6, 1e6, 1e6)
             Flight.BodyVelocity.Velocity = Vector3.new(0, 0, 0)
             Flight.BodyVelocity.Parent = root
-            
-            Flight.BodyGyro = Instance.new("BodyGyro")
-            Flight.BodyGyro.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
-            Flight.BodyGyro.P = 10000
-            Flight.BodyGyro.D = 500
-            Flight.BodyGyro.CFrame = cam.CFrame
-            Flight.BodyGyro.Parent = root
         end
         
         Flight.BodyVelocity.Velocity = move
-        Flight.BodyGyro.CFrame = cam.CFrame
         
         if hum then
             hum:ChangeState(Enum.HumanoidStateType.Physics)
@@ -300,10 +323,6 @@ local function updateFlight()
     elseif Flight.BodyVelocity then
         Flight.BodyVelocity:Destroy()
         Flight.BodyVelocity = nil
-        if Flight.BodyGyro then
-            Flight.BodyGyro:Destroy()
-            Flight.BodyGyro = nil
-        end
     end
 end
 
@@ -319,10 +338,6 @@ local function toggleFlight()
             Flight.BodyVelocity:Destroy()
             Flight.BodyVelocity = nil
         end
-        if Flight.BodyGyro then
-            Flight.BodyGyro:Destroy()
-            Flight.BodyGyro = nil
-        end
         if Flight.Connection then
             Flight.Connection:Disconnect()
             Flight.Connection = nil
@@ -337,22 +352,26 @@ local function toggleFlight()
 end
 
 local function updateHitbox(state)
-    if state and LocalPlayer.Character then
-        local handle = LocalPlayer.Character:FindFirstChild("HitboxHandle")
-        if not handle then
-            handle = Instance.new("Part")
-            handle.Name = "HitboxHandle"
-            handle.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
-            handle.Transparency = 1
-            handle.CanCollide = false
-            handle.Anchored = true
-            handle.Parent = LocalPlayer.Character
+    if state then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    hrp.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
+                    hrp.Transparency = 1
+                    hrp.CanCollide = false
+                end
+            end
         end
     else
-        if LocalPlayer.Character then
-            local handle = LocalPlayer.Character:FindFirstChild("HitboxHandle")
-            if handle then
-                handle:Destroy()
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    hrp.Size = Vector3.new(2, 2, 1)
+                    hrp.Transparency = 0
+                    hrp.CanCollide = true
+                end
             end
         end
     end
@@ -512,11 +531,8 @@ end)
 
 createInput(ScrollingFrame, "Hitbox Size", Hitbox.HeadSize, function(value)
     Hitbox.HeadSize = value
-    if Hitbox.Enabled and LocalPlayer.Character then
-        local handle = LocalPlayer.Character:FindFirstChild("HitboxHandle")
-        if handle then
-            handle.Size = Vector3.new(value, value, value)
-        end
+    if Hitbox.Enabled then
+        updateHitbox(true)
     end
 end)
 
@@ -544,25 +560,29 @@ createToggle(ScrollingFrame, "Infinite Jump", InfiniteJump.Enabled, function(sta
 end)
 
 local movementFrame = Instance.new("Frame")
-movementFrame.Size = UDim2.new(1, -8, 0, 170)
+movementFrame.Size = UDim2.new(1, -6, 0, 150)
 movementFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-movementFrame.BorderSizePixel = 1
-movementFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+movementFrame.BorderSizePixel = 0
 movementFrame.Parent = ScrollingFrame
 
+local movementStroke = Instance.new("UIStroke")
+movementStroke.Thickness = 0.5
+movementStroke.Color = Color3.fromRGB(255, 255, 255)
+movementStroke.Parent = movementFrame
+
 local movementCorner = Instance.new("UICorner")
-movementCorner.CornerRadius = UDim.new(0, 4)
+movementCorner.CornerRadius = UDim.new(0, 3)
 movementCorner.Parent = movementFrame
 
 local movementLabel = Instance.new("TextLabel")
-movementLabel.Size = UDim2.new(1, -10, 0, 20)
-movementLabel.Position = UDim2.new(0, 5, 0, 5)
+movementLabel.Size = UDim2.new(1, -10, 0, 18)
+movementLabel.Position = UDim2.new(0, 5, 0, 3)
 movementLabel.BackgroundTransparency = 1
 movementLabel.Text = "MOVEMENT"
 movementLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 movementLabel.TextXAlignment = Enum.TextXAlignment.Left
 movementLabel.Font = Enum.Font.Code
-movementLabel.TextSize = 16
+movementLabel.TextSize = 14
 movementLabel.Parent = movementFrame
 
 createInput(movementFrame, "Speed", Movement.Speed, function(value)
@@ -581,19 +601,23 @@ createInput(movementFrame, "Gravity", Movement.Gravity, function(value)
 end)
 
 local modeButton = Instance.new("TextButton")
-modeButton.Size = UDim2.new(1, -10, 0, 25)
-modeButton.Position = UDim2.new(0, 5, 0, 135)
+modeButton.Size = UDim2.new(1, -10, 0, 22)
+modeButton.Position = UDim2.new(0, 5, 0, 120)
 modeButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-modeButton.BorderSizePixel = 1
-modeButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+modeButton.BorderSizePixel = 0
 modeButton.Text = "Mode: WS"
 modeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 modeButton.Font = Enum.Font.Code
-modeButton.TextSize = 14
+modeButton.TextSize = 12
 modeButton.Parent = movementFrame
 
+local modeStroke = Instance.new("UIStroke")
+modeStroke.Thickness = 0.5
+modeStroke.Color = Color3.fromRGB(255, 255, 255)
+modeStroke.Parent = modeButton
+
 local modeCorner = Instance.new("UICorner")
-modeCorner.CornerRadius = UDim.new(0, 4)
+modeCorner.CornerRadius = UDim.new(0, 3)
 modeCorner.Parent = modeButton
 
 modeButton.MouseButton1Click:Connect(function()
@@ -602,89 +626,109 @@ modeButton.MouseButton1Click:Connect(function()
 end)
 
 local teleportFrame = Instance.new("Frame")
-teleportFrame.Size = UDim2.new(1, -8, 0, 130)
+teleportFrame.Size = UDim2.new(1, -6, 0, 120)
 teleportFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-teleportFrame.BorderSizePixel = 1
-teleportFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+teleportFrame.BorderSizePixel = 0
 teleportFrame.Parent = ScrollingFrame
 
+local teleportStroke = Instance.new("UIStroke")
+teleportStroke.Thickness = 0.5
+teleportStroke.Color = Color3.fromRGB(255, 255, 255)
+teleportStroke.Parent = teleportFrame
+
 local teleportCorner = Instance.new("UICorner")
-teleportCorner.CornerRadius = UDim.new(0, 4)
+teleportCorner.CornerRadius = UDim.new(0, 3)
 teleportCorner.Parent = teleportFrame
 
 local teleportLabel = Instance.new("TextLabel")
-teleportLabel.Size = UDim2.new(1, -10, 0, 20)
-teleportLabel.Position = UDim2.new(0, 5, 0, 5)
+teleportLabel.Size = UDim2.new(1, -10, 0, 18)
+teleportLabel.Position = UDim2.new(0, 5, 0, 3)
 teleportLabel.BackgroundTransparency = 1
 teleportLabel.Text = "TELEPORT ALL"
 teleportLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 teleportLabel.TextXAlignment = Enum.TextXAlignment.Left
 teleportLabel.Font = Enum.Font.Code
-teleportLabel.TextSize = 16
+teleportLabel.TextSize = 14
 teleportLabel.Parent = teleportFrame
 
 local teleportToggle = Instance.new("TextButton")
-teleportToggle.Size = UDim2.new(0.4, -5, 0, 25)
-teleportToggle.Position = UDim2.new(0, 5, 0, 30)
+teleportToggle.Size = UDim2.new(0.4, -5, 0, 22)
+teleportToggle.Position = UDim2.new(0, 5, 0, 25)
 teleportToggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-teleportToggle.BorderSizePixel = 1
-teleportToggle.BorderColor3 = Color3.fromRGB(255, 255, 255)
+teleportToggle.BorderSizePixel = 0
 teleportToggle.Text = "OFF"
 teleportToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 teleportToggle.Font = Enum.Font.Code
-teleportToggle.TextSize = 14
+teleportToggle.TextSize = 12
 teleportToggle.Parent = teleportFrame
 
+local teleportToggleStroke = Instance.new("UIStroke")
+teleportToggleStroke.Thickness = 0.5
+teleportToggleStroke.Color = Color3.fromRGB(255, 255, 255)
+teleportToggleStroke.Parent = teleportToggle
+
 local teleportToggleCorner = Instance.new("UICorner")
-teleportToggleCorner.CornerRadius = UDim.new(0, 4)
+teleportToggleCorner.CornerRadius = UDim.new(0, 3)
 teleportToggleCorner.Parent = teleportToggle
 
 local teleportInput = Instance.new("TextBox")
-teleportInput.Size = UDim2.new(0.6, -5, 0, 25)
-teleportInput.Position = UDim2.new(0.4, 0, 0, 30)
+teleportInput.Size = UDim2.new(0.6, -5, 0, 22)
+teleportInput.Position = UDim2.new(0.4, 0, 0, 25)
 teleportInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-teleportInput.BorderSizePixel = 1
-teleportInput.BorderColor3 = Color3.fromRGB(255, 255, 255)
+teleportInput.BorderSizePixel = 0
 teleportInput.Text = "10"
 teleportInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 teleportInput.Font = Enum.Font.Code
-teleportInput.TextSize = 14
+teleportInput.TextSize = 12
 teleportInput.Parent = teleportFrame
 
+local teleportInputStroke = Instance.new("UIStroke")
+teleportInputStroke.Thickness = 0.5
+teleportInputStroke.Color = Color3.fromRGB(255, 255, 255)
+teleportInputStroke.Parent = teleportInput
+
 local teleportInputCorner = Instance.new("UICorner")
-teleportInputCorner.CornerRadius = UDim.new(0, 4)
+teleportInputCorner.CornerRadius = UDim.new(0, 3)
 teleportInputCorner.Parent = teleportInput
 
 local setPosButton = Instance.new("TextButton")
-setPosButton.Size = UDim2.new(1, -10, 0, 25)
-setPosButton.Position = UDim2.new(0, 5, 0, 65)
+setPosButton.Size = UDim2.new(1, -10, 0, 22)
+setPosButton.Position = UDim2.new(0, 5, 0, 55)
 setPosButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-setPosButton.BorderSizePixel = 1
-setPosButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
-setPosButton.Text = "SET INVISIBLE POSITION"
+setPosButton.BorderSizePixel = 0
+setPosButton.Text = "SET INVISIBLE POS"
 setPosButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 setPosButton.Font = Enum.Font.Code
-setPosButton.TextSize = 12
+setPosButton.TextSize = 11
 setPosButton.Parent = teleportFrame
 
+local setPosStroke = Instance.new("UIStroke")
+setPosStroke.Thickness = 0.5
+setPosStroke.Color = Color3.fromRGB(255, 255, 255)
+setPosStroke.Parent = setPosButton
+
 local setPosCorner = Instance.new("UICorner")
-setPosCorner.CornerRadius = UDim.new(0, 4)
+setPosCorner.CornerRadius = UDim.new(0, 3)
 setPosCorner.Parent = setPosButton
 
 local setPosButton2 = Instance.new("TextButton")
-setPosButton2.Size = UDim2.new(1, -10, 0, 25)
-setPosButton2.Position = UDim2.new(0, 5, 0, 95)
+setPosButton2.Size = UDim2.new(1, -10, 0, 22)
+setPosButton2.Position = UDim2.new(0, 5, 0, 82)
 setPosButton2.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-setPosButton2.BorderSizePixel = 1
-setPosButton2.BorderColor3 = Color3.fromRGB(255, 255, 255)
-setPosButton2.Text = "TELEPORT TO POSITION"
+setPosButton2.BorderSizePixel = 0
+setPosButton2.Text = "TELEPORT TO POS"
 setPosButton2.TextColor3 = Color3.fromRGB(255, 255, 255)
 setPosButton2.Font = Enum.Font.Code
-setPosButton2.TextSize = 12
+setPosButton2.TextSize = 11
 setPosButton2.Parent = teleportFrame
 
+local setPosStroke2 = Instance.new("UIStroke")
+setPosStroke2.Thickness = 0.5
+setPosStroke2.Color = Color3.fromRGB(255, 255, 255)
+setPosStroke2.Parent = setPosButton2
+
 local setPosCorner2 = Instance.new("UICorner")
-setPosCorner2.CornerRadius = UDim.new(0, 4)
+setPosCorner2.CornerRadius = UDim.new(0, 3)
 setPosCorner2.Parent = setPosButton2
 
 teleportInput.FocusLost:Connect(function()
@@ -723,14 +767,6 @@ end)
 RunService.Heartbeat:Connect(function()
     if Flight.Enabled then
         updateFlight()
-    end
-    
-    if Hitbox.Enabled and LocalPlayer.Character then
-        local handle = LocalPlayer.Character:FindFirstChild("HitboxHandle")
-        local root = LocalPlayer.Character:FindFirstChild("Head")
-        if handle and root then
-            handle.CFrame = root.CFrame
-        end
     end
     
     if Movement.Mode == "BV" and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and Movement.BodyVelocity and Movement.BodyVelocity.Parent then
@@ -794,10 +830,6 @@ LocalPlayer.CharacterRemoving:Connect(function()
             Flight.BodyVelocity:Destroy()
             Flight.BodyVelocity = nil
         end
-        if Flight.BodyGyro then
-            Flight.BodyGyro:Destroy()
-            Flight.BodyGyro = nil
-        end
     end
     
     if Invisible.State then
@@ -813,6 +845,41 @@ end)
 
 if LocalPlayer.Character then
     task.spawn(setupMovementPhysics, LocalPlayer.Character)
+end
+
+Players.PlayerAdded:Connect(function(player)
+    if player ~= LocalPlayer then
+        player.CharacterAdded:Connect(function(character)
+            if Hitbox.Enabled then
+                local hrp = character:WaitForChild("HumanoidRootPart", 10)
+                if hrp then
+                    hrp.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
+                    hrp.Transparency = 1
+                    hrp.CanCollide = false
+                end
+            end
+        end)
+        
+        if player.Character and Hitbox.Enabled then
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
+                hrp.Transparency = 1
+                hrp.CanCollide = false
+            end
+        end
+    end
+end)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer and player.Character and Hitbox.Enabled then
+        local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Size = Vector3.new(Hitbox.HeadSize, Hitbox.HeadSize, Hitbox.HeadSize)
+            hrp.Transparency = 1
+            hrp.CanCollide = false
+        end
+    end
 end
 
 updateMovementStats()
