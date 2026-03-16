@@ -13,7 +13,7 @@ local Config = {
     HitboxSize = 10,
     Invis_Enabled = false,
     Invis_Transparency = 0.75,
-    SeatTeleportPos = Vector3.new(-25, 400, 3500),
+    SeatTeleportPos = Vector3.new(-500000, 500000, 500000),
     TeleportEnabled = false,
     TeleportDistance = 10
 }
@@ -243,58 +243,10 @@ local function createInput(parent, name, prop, suffix)
     end)
 end
 
-createInput(CharacterScroll, "Walk Speed", "Speed", "studs/s")
-createInput(CharacterScroll, "Jump Power", "JumpPower")
-createToggle(CharacterScroll, "Body Velocity Mode", "BV_Enabled")
-createToggle(CharacterScroll, "No Clip", "Noclip", function(state)
-    if state then
-        local char = LocalPlayer.Character
-        if char then
-            for _, v in pairs(char:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = false
-                end
-            end
-        end
-    end
-end)
-createToggle(CharacterScroll, "Infinite Jump", "InfJump")
-createToggle(CharacterScroll, "Invisible", "Invis_Enabled", function(state)
-    toggleInvis(state)
-end)
+-- Объявляем переменные для функций обновления UI
+local updateInvis = nil
 
-createToggle(HitboxScroll, "Hitbox", "Hitbox")
-createInput(HitboxScroll, "Hitbox Size", "HitboxSize", "studs")
-
-local teleportConnection = nil
-local TeleportToggle, updateTeleport = createToggle(TeleportScroll, "Teleport All Players", "TeleportEnabled", function(state)
-    if state then
-        teleportConnection = RunService.Heartbeat:Connect(function()
-            local char = LocalPlayer.Character
-            local root = char and char:FindFirstChild("HumanoidRootPart")
-            if not root then return end
-
-            local targetPos = (root.CFrame * CFrame.new(0, 0, -Config.TeleportDistance)).Position
-
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local tRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                    if tRoot then
-                        tRoot.CFrame = CFrame.new(targetPos)
-                    end
-                end
-            end
-        end)
-    else
-        if teleportConnection then
-            teleportConnection:Disconnect()
-            teleportConnection = nil
-        end
-    end
-end)
-
-createInput(TeleportScroll, "Teleport Distance", "TeleportDistance", "studs")
-
+-- Функция для переключения невидимости
 local function toggleInvis(state)
     local char = LocalPlayer.Character
     if not char then return end
@@ -329,7 +281,68 @@ local function toggleInvis(state)
             workspace.InvisChair:Destroy() 
         end
     end
+    
+    -- Обновляем UI если функция существует
+    if updateInvis then
+        updateInvis()
+    end
 end
+
+-- Создаем элементы UI
+createInput(CharacterScroll, "Walk Speed", "Speed", "studs/s")
+createInput(CharacterScroll, "Jump Power", "JumpPower")
+createToggle(CharacterScroll, "Body Velocity Mode", "BV_Enabled")
+createToggle(CharacterScroll, "No Clip", "Noclip", function(state)
+    if state then
+        local char = LocalPlayer.Character
+        if char then
+            for _, v in pairs(char:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+createToggle(CharacterScroll, "Infinite Jump", "InfJump")
+
+-- Сохраняем функцию обновления для Invisible
+local invisToggle, invisUpdate = createToggle(CharacterScroll, "Invisible", "Invis_Enabled", function(state)
+    toggleInvis(state)
+end)
+updateInvis = invisUpdate
+
+createToggle(HitboxScroll, "Hitbox", "Hitbox")
+createInput(HitboxScroll, "Hitbox Size", "HitboxSize", "studs")
+
+local teleportConnection = nil
+local TeleportToggle, updateTeleport = createToggle(TeleportScroll, "Teleport All Players", "TeleportEnabled", function(state)
+    if state then
+        teleportConnection = RunService.Heartbeat:Connect(function()
+            local char = LocalPlayer.Character
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            if not root then return end
+
+            local targetPos = (root.CFrame * CFrame.new(0, 0, -Config.TeleportDistance)).Position
+
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    local tRoot = player.Character:FindFirstChild("HumanoidRootPart")
+                    if tRoot then
+                        tRoot.CFrame = CFrame.new(targetPos)
+                    end
+                end
+            end
+        end)
+    else
+        if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+        end
+    end
+end)
+
+createInput(TeleportScroll, "Teleport Distance", "TeleportDistance", "studs")
 
 local function resetHitboxes()
     for _, p in pairs(Players:GetPlayers()) do
@@ -419,24 +432,10 @@ UserInputService.InputBegan:Connect(function(i, g)
     if i.KeyCode == Enum.KeyCode.Z then
         Config.Invis_Enabled = not Config.Invis_Enabled
         toggleInvis(Config.Invis_Enabled)
-        if updateInvis then updateInvis() end
     elseif i.KeyCode == Enum.KeyCode.Insert then
         Main.Visible = not Main.Visible
     end
 end)
-
-local updateInvis
-for _, v in pairs(CharacterScroll:GetChildren()) do
-    if v:IsA("TextButton") and v:FindFirstChild("TextLabel") and v.TextLabel.Text == "Invisible" then
-        local indicator = v:FindFirstChild("Frame")
-        if indicator then
-            updateInvis = function()
-                indicator.BackgroundColor3 = Config.Invis_Enabled and Color3.fromRGB(100, 200, 100) or Color3.fromRGB(60, 60, 60)
-            end
-        end
-        break
-    end
-end
 
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(character)
