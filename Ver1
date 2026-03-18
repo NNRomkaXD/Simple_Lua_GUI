@@ -15,7 +15,10 @@ local Config = {
     Invis_Transparency = 0.75,
     SeatTeleportPos = Vector3.new(-500000, 500000, 500000),
     TeleportEnabled = false,
-    TeleportDistance = 10
+    TeleportDistance = 10,
+    DisableRagdoll = false,
+    TouchFling = false,
+    TeleportTo = Vector3.new(0, 50, 0)
 }
 
 local ScreenGui = Instance.new("ScreenGui")
@@ -24,8 +27,8 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 500, 0, 400)
-Main.Position = UDim2.new(0.5, -250, 0.5, -200)
+Main.Size = UDim2.new(0, 500, 0, 450)
+Main.Position = UDim2.new(0.5, -250, 0.5, -225)
 Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Main.Active = true
 Main.Draggable = true
@@ -243,10 +246,137 @@ local function createInput(parent, name, prop, suffix)
     end)
 end
 
+-- Функция для создания поля ввода координат (X Y Z в одну строку) с кнопкой в стиле GUI
+local function createCoordinateInput(parent, name, prop)
+    local frame = Instance.new("Frame", parent)
+    frame.Size = UDim2.new(1, 0, 0, 30)
+    frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 4)
+    
+    local label = Instance.new("TextLabel", frame)
+    label.Size = UDim2.new(0.25, -5, 1, 0)
+    label.Position = UDim2.new(0, 8, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.new(1, 1, 1)
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 15
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local box = Instance.new("TextBox", frame)
+    box.Size = UDim2.new(0.55, -15, 1, -6)
+    box.Position = UDim2.new(0.25, 5, 0, 3)
+    box.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    box.TextColor3 = Color3.new(1, 1, 1)
+    box.Font = Enum.Font.SourceSans
+    box.TextSize = 14
+    box.Text = string.format("%.1f %.1f %.1f", Config[prop].X, Config[prop].Y, Config[prop].Z)
+    box.ClearTextOnFocus = false
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
+    
+    box.FocusLost:Connect(function()
+        local x, y, z = box.Text:match("([%-%d%.]+)%s+([%-%d%.]+)%s+([%-%d%.]+)")
+        if x and y and z then
+            Config[prop] = Vector3.new(tonumber(x) or 0, tonumber(y) or 0, tonumber(z) or 0)
+            box.Text = string.format("%.1f %.1f %.1f", Config[prop].X, Config[prop].Y, Config[prop].Z)
+        else
+            box.Text = string.format("%.1f %.1f %.1f", Config[prop].X, Config[prop].Y, Config[prop].Z)
+        end
+    end)
+    
+    -- Кнопка для телепортации в стиле GUI (как тогглы)
+    local teleportBtn = Instance.new("TextButton", frame)
+    teleportBtn.Size = UDim2.new(0, 50, 0, 22)
+    teleportBtn.Position = UDim2.new(1, -55, 0.5, -11)
+    teleportBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 65)  -- Серый цвет как у активной вкладки
+    teleportBtn.Text = "GO"
+    teleportBtn.TextColor3 = Color3.new(1, 1, 1)
+    teleportBtn.Font = Enum.Font.SourceSansBold
+    teleportBtn.TextSize = 13
+    Instance.new("UICorner", teleportBtn).CornerRadius = UDim.new(0, 4)
+    
+    -- Эффект при наведении
+    teleportBtn.MouseEnter:Connect(function()
+        teleportBtn.BackgroundColor3 = Color3.fromRGB(85, 85, 85)
+    end)
+    
+    teleportBtn.MouseLeave:Connect(function()
+        teleportBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+    end)
+    
+    teleportBtn.MouseButton1Click:Connect(function()
+        -- Эффект нажатия
+        teleportBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        task.wait(0.1)
+        teleportBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+        
+        local char = LocalPlayer.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if root then
+            root.CFrame = CFrame.new(Config[prop])
+        end
+    end)
+end
+
 -- Объявляем переменные для функций обновления UI
 local updateInvis = nil
+local ragdollConnection = nil
+local flingConnection = nil
 
--- Функция для переключения невидимости
+-- Функция для отключения регдолла
+local function toggleRagdoll(state)
+    local char = LocalPlayer.Character
+    if not char then return end
+    
+    local hum = char:FindFirstChild("Humanoid")
+    if not hum then return end
+    
+    if state then
+        hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+        hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, false)
+        
+        if not ragdollConnection then
+            ragdollConnection = hum.StateChanged:Connect(function(_, newState)
+                if newState == Enum.HumanoidStateType.FallingDown or newState == Enum.HumanoidStateType.Ragdoll then
+                    hum:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end)
+        end
+    else
+        hum:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+        hum:SetStateEnabled(Enum.HumanoidStateType.Ragdoll, true)
+        
+        if ragdollConnection then
+            ragdollConnection:Disconnect()
+            ragdollConnection = nil
+        end
+    end
+end
+
+-- Функция для Touch Fling
+local function toggleTouchFling(state)
+    if state then
+        local function fling()
+            while Config.TouchFling do
+                RunService.Heartbeat:Wait()
+                local char = LocalPlayer.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local vel = hrp.Velocity
+                    hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+                    RunService.RenderStepped:Wait()
+                    hrp.Velocity = vel
+                    RunService.Stepped:Wait()
+                    hrp.Velocity = vel + Vector3.new(0, 0.1, 0)
+                end
+            end
+        end
+        
+        task.spawn(fling)
+    end
+end
+
+-- Функция для невидимости
 local function toggleInvis(state)
     local char = LocalPlayer.Character
     if not char then return end
@@ -282,13 +412,12 @@ local function toggleInvis(state)
         end
     end
     
-    -- Обновляем UI если функция существует
     if updateInvis then
         updateInvis()
     end
 end
 
--- Создаем элементы UI
+-- Создаем элементы UI для Character секции
 createInput(CharacterScroll, "Walk Speed", "Speed", "studs/s")
 createInput(CharacterScroll, "Jump Power", "JumpPower")
 createToggle(CharacterScroll, "Body Velocity Mode", "BV_Enabled")
@@ -305,6 +434,12 @@ createToggle(CharacterScroll, "No Clip", "Noclip", function(state)
     end
 end)
 createToggle(CharacterScroll, "Infinite Jump", "InfJump")
+createToggle(CharacterScroll, "Disable Ragdoll", "DisableRagdoll", function(state)
+    toggleRagdoll(state)
+end)
+createToggle(CharacterScroll, "Touch Fling", "TouchFling", function(state)
+    toggleTouchFling(state)
+end)
 
 -- Сохраняем функцию обновления для Invisible
 local invisToggle, invisUpdate = createToggle(CharacterScroll, "Invisible", "Invis_Enabled", function(state)
@@ -312,9 +447,11 @@ local invisToggle, invisUpdate = createToggle(CharacterScroll, "Invisible", "Inv
 end)
 updateInvis = invisUpdate
 
+-- Секция Hitbox
 createToggle(HitboxScroll, "Hitbox", "Hitbox")
 createInput(HitboxScroll, "Hitbox Size", "HitboxSize", "studs")
 
+-- Секция Teleport
 local teleportConnection = nil
 local TeleportToggle, updateTeleport = createToggle(TeleportScroll, "Teleport All Players", "TeleportEnabled", function(state)
     if state then
@@ -343,6 +480,7 @@ local TeleportToggle, updateTeleport = createToggle(TeleportScroll, "Teleport Al
 end)
 
 createInput(TeleportScroll, "Teleport Distance", "TeleportDistance", "studs")
+createCoordinateInput(TeleportScroll, "Teleport To (X Y Z)", "TeleportTo")
 
 local function resetHitboxes()
     for _, p in pairs(Players:GetPlayers()) do
@@ -446,6 +584,11 @@ Players.PlayerAdded:Connect(function(player)
                 character.Head.Transparency = 0
                 character.Head.CanCollide = true
             end
+        end
+        
+        if Config.DisableRagdoll then
+            task.wait(0.1)
+            toggleRagdoll(true)
         end
     end)
 end)
