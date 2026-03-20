@@ -16,7 +16,7 @@ local Config = {
     Invis_Enabled = false,
     Invis_Transparency = 0.75,
     TouchFling = false,
-    FlingPower = 5e5,
+    FlingPower = 9e9,
     Hitbox = false,
     HitboxSize = 10,
     HitboxVisible = false,
@@ -26,21 +26,22 @@ local Config = {
     TeleportDistance = 10,
     TeleportTo = Vector3.new(0, 50, 0),
     ESP_Enabled = false,
-    SeatTeleportPos = Vector3.new(5e5, 5e5, 5e5)
+    SeatTeleportPos = Vector3.new(5e5, 5e5, 5e5),
+    Spin_Enabled = false,
+    Spin_Speed = 50
 }
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "FuriousPrimeGUI"
+ScreenGui.Name = "FrulesGUI"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = game:GetService("CoreGui")
 
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 550, 0, 500)
-Main.Position = UDim2.new(0.5, -275, 0.5, -250)
+Main.Size = UDim2.new(0, 580, 0, 550)
+Main.Position = UDim2.new(0.5, -290, 0.5, -275)
 Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Main.Active = true
 Main.Draggable = true
-Main.Name = "MainFrame"
 
 local Corner = Instance.new("UICorner", Main)
 Corner.CornerRadius = UDim.new(0, 8)
@@ -49,15 +50,25 @@ local Title = Instance.new("TextLabel", Main)
 Title.Size = UDim2.new(1, 0, 0, 35)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Title.Text = "Frules GUI"
+Title.Text = "frules"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.SourceSansBold
 Title.TextSize = 20
 Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 8)
 
+local TabContainer = Instance.new("Frame", Main)
+TabContainer.Size = UDim2.new(1, 0, 0, 35)
+TabContainer.Position = UDim2.new(0, 0, 0, 35)
+TabContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TabContainer.BackgroundTransparency = 0
+
+local TabLayout = Instance.new("UIListLayout", TabContainer)
+TabLayout.FillDirection = Enum.FillDirection.Horizontal
+TabLayout.Padding = UDim.new(0, 2)
+
 local MainScroll = Instance.new("ScrollingFrame", Main)
-MainScroll.Size = UDim2.new(1, -20, 1, -55)
-MainScroll.Position = UDim2.new(0, 10, 0, 45)
+MainScroll.Size = UDim2.new(1, -20, 1, -85)
+MainScroll.Position = UDim2.new(0, 10, 0, 75)
 MainScroll.BackgroundTransparency = 1
 MainScroll.ScrollBarThickness = 4
 MainScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -239,7 +250,7 @@ local function createPlayerDropdown(parent, name, prop)
     dropdown.TextColor3 = Color3.new(1, 1, 1)
     dropdown.Font = Enum.Font.SourceSans
     dropdown.TextSize = 14
-    dropdown.Text = Config[prop] == "" and "Select Player" or Config[prop]
+    dropdown.Text = Config[prop] == "" and "select player" or Config[prop]
     Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 4)
     
     local menu = Instance.new("Frame", frame)
@@ -265,7 +276,6 @@ local function createPlayerDropdown(parent, name, prop)
             if player ~= LocalPlayer then table.insert(players, player.Name) end
         end
         table.sort(players)
-        menu.Size = UDim2.new(0.5, -15, 0, #players * 25)
         
         for _, playerName in ipairs(players) do
             local btn = Instance.new("TextButton", menu)
@@ -415,7 +425,7 @@ local function createCoordinateInput(parent, name, prop)
     teleportBtn.Size = UDim2.new(0, 50, 0, 22)
     teleportBtn.Position = UDim2.new(1, -55, 0.5, -11)
     teleportBtn.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
-    teleportBtn.Text = "GO"
+    teleportBtn.Text = "go"
     teleportBtn.TextColor3 = Color3.new(1, 1, 1)
     teleportBtn.Font = Enum.Font.SourceSansBold
     teleportBtn.TextSize = 13
@@ -435,7 +445,47 @@ local function createCoordinateInput(parent, name, prop)
     end)
 end
 
+local function createTab(name)
+    local tab = Instance.new("TextButton", TabContainer)
+    tab.Size = UDim2.new(0, 80, 1, -2)
+    tab.Position = UDim2.new(0, 0, 0, 1)
+    tab.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    tab.Text = name
+    tab.TextColor3 = Color3.new(1, 1, 1)
+    tab.Font = Enum.Font.SourceSansBold
+    tab.TextSize = 14
+    Instance.new("UICorner", tab).CornerRadius = UDim.new(0, 4)
+    
+    local container = Instance.new("Frame", MainScroll)
+    container.Size = UDim2.new(1, 0, 0, 0)
+    container.BackgroundTransparency = 1
+    container.AutomaticSize = Enum.AutomaticSize.Y
+    container.Visible = false
+    
+    local layout = Instance.new("UIListLayout", container)
+    layout.Padding = UDim.new(0, 10)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    
+    tab.MouseButton1Click:Connect(function()
+        for _, child in pairs(MainScroll:GetChildren()) do
+            if child:IsA("Frame") and child ~= container then
+                child.Visible = false
+            end
+        end
+        container.Visible = true
+        for _, t in pairs(TabContainer:GetChildren()) do
+            if t:IsA("TextButton") then
+                t.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            end
+        end
+        tab.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    end)
+    
+    return container
+end
+
 local updateInvis, ragdollConnection, flingThread, espConnection, teleportConnection = nil
+local spinConnection = nil
 
 local function toggleRagdoll(state)
     local char, hum = LocalPlayer.Character, LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
@@ -469,7 +519,7 @@ local function toggleTouchFling(state)
         local function fling()
             while Config.TouchFling do
                 RunService.Heartbeat:Wait()
-                local c, hrp = LocalPlayer.Character, LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                 if hrp then
                     local vel, movel = hrp.Velocity, 0.1
                     hrp.Velocity = vel * Config.FlingPower + Vector3.new(0, Config.FlingPower, 0)
@@ -540,6 +590,23 @@ local function toggleESP(state)
     end
 end
 
+local function toggleSpin(state)
+    if state then
+        if spinConnection then spinConnection:Disconnect() end
+        spinConnection = RunService.RenderStepped:Connect(function()
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.Angles(0, math.rad(Config.Spin_Speed), 0)
+            end
+        end)
+    else
+        if spinConnection then 
+            spinConnection:Disconnect() 
+            spinConnection = nil 
+        end
+    end
+end
+
 local function resetHitboxes()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
@@ -555,36 +622,46 @@ local function resetHitboxes()
     end
 end
 
-local physicsSection = createSection(MainScroll, "PHYSICS")
-createInput(physicsSection, "Walk Speed", "Speed", "studs/s")
-createInput(physicsSection, "Jump Power", "JumpPower")
-createInput(physicsSection, "Gravity", "Gravity")
-createToggle(physicsSection, "Disable Ragdoll", "DisableRagdoll", toggleRagdoll)
-createToggle(physicsSection, "Body Velocity Mode", "BV_Enabled")
-createInput(physicsSection, "  BV Mode Speed", "BV_Speed", "studs/s")
+local combatTab = createTab("combat")
+local movementTab = createTab("movement")
+local visualsTab = createTab("visuals")
+local teleportTab = createTab("teleport")
+local miscTab = createTab("misc")
 
-local abilitiesSection = createSection(MainScroll, "ABILITIES")
-createToggle(abilitiesSection, "No Clip", "Noclip", function(state)
+local physicsSection = createSection(movementTab, "physics")
+createInput(physicsSection, "walk speed", "Speed", "s/s")
+createInput(physicsSection, "jump power", "JumpPower")
+createInput(physicsSection, "gravity", "Gravity")
+createToggle(physicsSection, "disable ragdoll", "DisableRagdoll", toggleRagdoll)
+createToggle(physicsSection, "body velocity mode", "BV_Enabled")
+createInput(physicsSection, "bv speed", "BV_Speed", "s/s")
+
+local abilitiesSection = createSection(movementTab, "abilities")
+createToggle(abilitiesSection, "no clip", "Noclip", function(state)
     if state then
         local char = LocalPlayer.Character
         if char then for _, v in pairs(char:GetDescendants()) do if v:IsA("BasePart") then v.CanCollide = false end end end
     end
 end)
-createToggle(abilitiesSection, "Infinite Jump", "InfJump")
-local invisToggle, invisUpdate = createToggle(abilitiesSection, "Invisible", "Invis_Enabled", toggleInvis)
+createToggle(abilitiesSection, "infinite jump", "InfJump")
+local invisToggle, invisUpdate = createToggle(abilitiesSection, "invisible", "Invis_Enabled", toggleInvis)
 updateInvis = invisUpdate
-createToggle(abilitiesSection, "Touch Fling", "TouchFling", toggleTouchFling)
-createInput(abilitiesSection, "Fling Power", "FlingPower")
+createToggle(abilitiesSection, "touch fling", "TouchFling", toggleTouchFling)
+createInput(abilitiesSection, "fling power", "FlingPower")
 
-local hitboxSection = createSection(MainScroll, "HITBOX")
-createToggle(hitboxSection, "Hitbox", "Hitbox")
-createInput(hitboxSection, "Hitbox Size", "HitboxSize", "studs")
-createToggle(hitboxSection, "Visible Hitbox", "HitboxVisible")
+local spinSection = createSection(movementTab, "spin")
+createToggle(spinSection, "spin", "Spin_Enabled", toggleSpin)
+createInput(spinSection, "spin speed", "Spin_Speed", "deg/s")
 
-local teleportSection = createSection(MainScroll, "TELEPORT")
-createDropdown(teleportSection, "Teleport Mode", "TeleportMode", {"All", "Target"})
-createPlayerDropdown(teleportSection, "Target Player", "TeleportTarget")
-local TeleportToggle, updateTeleport = createToggle(teleportSection, "Teleport Players", "TeleportEnabled", function(state)
+local hitboxSection = createSection(combatTab, "hitbox")
+createToggle(hitboxSection, "hitbox", "Hitbox")
+createInput(hitboxSection, "hitbox size", "HitboxSize", "s")
+createToggle(hitboxSection, "visible hitbox", "HitboxVisible")
+
+local teleportSection = createSection(teleportTab, "teleport players")
+createDropdown(teleportSection, "teleport mode", "TeleportMode", {"All", "Target"})
+createPlayerDropdown(teleportSection, "target player", "TeleportTarget")
+local TeleportToggle, updateTeleport = createToggle(teleportSection, "teleport players", "TeleportEnabled", function(state)
     if state then
         teleportConnection = RunService.Heartbeat:Connect(function()
             local char, root = LocalPlayer.Character, LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -594,14 +671,20 @@ local TeleportToggle, updateTeleport = createToggle(teleportSection, "Teleport P
                 for _, player in ipairs(Players:GetPlayers()) do
                     if player ~= LocalPlayer and player.Character then
                         local tRoot = player.Character:FindFirstChild("HumanoidRootPart")
-                        if tRoot then tRoot.CFrame = CFrame.new(offsetPosition) end
+                        if tRoot then 
+                            tRoot.CFrame = CFrame.new(offsetPosition)
+                            tRoot.Velocity = Vector3.zero
+                        end
                     end
                 end
             elseif Config.TeleportMode == "Target" and Config.TeleportTarget ~= "" then
                 local target = Players:FindFirstChild(Config.TeleportTarget)
                 if target and target.Character then
                     local tRoot = target.Character:FindFirstChild("HumanoidRootPart")
-                    if tRoot then tRoot.CFrame = CFrame.new(offsetPosition) end
+                    if tRoot then 
+                        tRoot.CFrame = CFrame.new(offsetPosition)
+                        tRoot.Velocity = Vector3.zero
+                    end
                 end
             end
         end)
@@ -609,11 +692,15 @@ local TeleportToggle, updateTeleport = createToggle(teleportSection, "Teleport P
         if teleportConnection then teleportConnection:Disconnect() teleportConnection = nil end
     end
 end)
-createInput(teleportSection, "Teleport Distance", "TeleportDistance", "studs")
-createCoordinateInput(teleportSection, "Teleport To (X Y Z)", "TeleportTo")
+createInput(teleportSection, "teleport distance", "TeleportDistance", "s")
 
-local visualSection = createSection(MainScroll, "VISUAL")
-createToggle(visualSection, "ESP", "ESP_Enabled", toggleESP)
+local selfTeleportSection = createSection(teleportTab, "self teleport")
+createCoordinateInput(selfTeleportSection, "teleport to (x y z)", "TeleportTo")
+
+local visualSection = createSection(visualsTab, "visuals")
+createToggle(visualSection, "esp", "ESP_Enabled", toggleESP)
+
+local miscSection = createSection(miscTab, "misc")
 
 RunService.Heartbeat:Connect(function(dt)
     local char, hrp, hum = LocalPlayer.Character, LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart"), LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
@@ -691,5 +778,29 @@ Players.PlayerAdded:Connect(function(player)
             end
         end
         if Config.DisableRagdoll then task.wait(0.1) toggleRagdoll(true) end
+        if Config.Spin_Enabled then
+            if spinConnection then spinConnection:Disconnect() end
+            toggleSpin(true)
+        end
     end)
 end)
+
+LocalPlayer.CharacterAdded:Connect(function(character)
+    task.wait(0.5)
+    if Config.Spin_Enabled then
+        if spinConnection then spinConnection:Disconnect() end
+        toggleSpin(true)
+    end
+end)
+
+for _, child in pairs(MainScroll:GetChildren()) do
+    if child:IsA("Frame") and child ~= combatTab and child ~= movementTab and child ~= visualsTab and child ~= teleportTab and child ~= miscTab then
+        child.Visible = false
+    end
+end
+movementTab.Visible = true
+for _, t in pairs(TabContainer:GetChildren()) do
+    if t:IsA("TextButton") and t.Text == "movement" then
+        t.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    end
+end
